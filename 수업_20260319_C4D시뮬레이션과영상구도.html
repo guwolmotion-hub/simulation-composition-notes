@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>C4D 시뮬레이션 & 영상 구도 이론 | 0319 저녁반</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary: #4f46e5;
+      --primary-light: #818cf8;
+      --secondary: #7c3aed;
+      --accent: #f59e0b;
+      --success: #10b981;
+      --danger: #ef4444;
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --text: #1e293b;
+      --text-muted: #64748b;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+    }
+
+    /* NAV */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid #e2e8f0;
+      padding: 0 2rem;
+    }
+    nav ul {
+      display: flex; gap: 0.5rem; list-style: none;
+      max-width: 1100px; margin: 0 auto; padding: 0.75rem 0;
+      overflow-x: auto;
+    }
+    nav ul li a {
+      text-decoration: none; color: var(--text-muted);
+      font-size: 0.85rem; font-weight: 500;
+      padding: 0.35rem 0.85rem;
+      border-radius: 999px;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+    nav ul li a:hover {
+      background: var(--primary); color: #fff;
+    }
+
+    /* HERO */
+    .hero {
+      background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #a855f7 100%);
+      color: white; text-align: center;
+      padding: 4rem 2rem 3rem;
+      position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Ccircle cx='30' cy='30' r='4'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    .hero .badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.3);
+      padding: 0.3rem 1rem; border-radius: 999px;
+      font-size: 0.8rem; font-weight: 500; margin-bottom: 1rem;
+      letter-spacing: 0.05em;
+    }
+    .hero h1 {
+      font-size: clamp(1.8rem, 5vw, 3rem);
+      font-weight: 900; margin-bottom: 0.75rem;
+      text-shadow: 0 2px 20px rgba(0,0,0,0.2);
+    }
+    .hero p {
+      font-size: 1.05rem; opacity: 0.85;
+    }
+    .hero-meta {
+      display: flex; justify-content: center; gap: 1.5rem;
+      margin-top: 1.5rem; flex-wrap: wrap;
+    }
+    .hero-meta span {
+      background: rgba(255,255,255,0.15);
+      padding: 0.4rem 1rem; border-radius: 999px;
+      font-size: 0.85rem;
+    }
+
+    /* MAIN */
+    main {
+      max-width: 1100px; margin: 0 auto;
+      padding: 2.5rem 1.5rem 4rem;
+      display: grid; gap: 2rem;
+    }
+
+    /* SECTION TITLE */
+    .section-title {
+      display: flex; align-items: center; gap: 0.75rem;
+      margin-bottom: 1.25rem;
+    }
+    .section-title .icon {
+      width: 2.5rem; height: 2.5rem;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border-radius: 0.65rem;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem; flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(79,70,229,0.3);
+    }
+    .section-title h2 {
+      font-size: 1.3rem; font-weight: 700;
+      color: var(--text);
+    }
+    .section-title h2 span {
+      display: block; font-size: 0.8rem; font-weight: 400;
+      color: var(--text-muted); margin-top: 0.1rem;
+    }
+
+    /* CARD */
+    .card {
+      background: var(--card);
+      border-radius: 1.25rem;
+      padding: 1.75rem;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+      border: 1px solid #e8edf4;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 30px rgba(79,70,229,0.12);
+    }
+
+    /* SIMULATION GRID */
+    .sim-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 1rem;
+    }
+    .sim-item {
+      background: linear-gradient(135deg, #f8f7ff, #ede9fe);
+      border: 1px solid #ddd6fe;
+      border-radius: 1rem; padding: 1.25rem;
+      position: relative; overflow: hidden;
+      transition: all 0.2s;
+    }
+    .sim-item:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(109,40,217,0.15); }
+    .sim-item .num {
+      font-size: 0.7rem; font-weight: 700;
+      color: var(--primary-light); letter-spacing: 0.1em;
+      text-transform: uppercase; margin-bottom: 0.5rem;
+    }
+    .sim-item h3 {
+      font-size: 1rem; font-weight: 700; color: var(--primary);
+      margin-bottom: 0.5rem;
+    }
+    .sim-item p { font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; }
+    .sim-item .tags { margin-top: 0.75rem; display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .sim-item .tag {
+      background: white; border: 1px solid #c4b5fd;
+      color: var(--secondary); font-size: 0.72rem; font-weight: 500;
+      padding: 0.15rem 0.6rem; border-radius: 999px;
+    }
+    .sim-item.special {
+      background: linear-gradient(135deg, #fef3c7, #fde68a);
+      border-color: #fcd34d;
+    }
+    .sim-item.special h3 { color: #92400e; }
+    .sim-item.special .tag { border-color: #fcd34d; color: #92400e; background: white; }
+
+    /* LIST CARD */
+    .list-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+    .list-block {
+      background: #f8fafc; border-radius: 0.85rem;
+      padding: 1.1rem 1.25rem; border-left: 4px solid var(--primary);
+    }
+    .list-block h4 {
+      font-size: 0.9rem; font-weight: 700; color: var(--primary);
+      margin-bottom: 0.6rem;
+    }
+    .list-block ul { list-style: none; }
+    .list-block ul li {
+      font-size: 0.85rem; color: var(--text);
+      padding: 0.2rem 0;
+      display: flex; align-items: flex-start; gap: 0.5rem;
+    }
+    .list-block ul li::before { content: '›'; color: var(--primary-light); font-weight: 700; }
+
+    /* HIGHLIGHT BOX */
+    .highlight {
+      background: linear-gradient(135deg, #fef9c3, #fef3c7);
+      border: 1.5px solid #fcd34d;
+      border-radius: 1rem; padding: 1.25rem 1.5rem;
+      margin-top: 1rem;
+    }
+    .highlight .hl-title {
+      font-size: 0.8rem; font-weight: 700;
+      color: #92400e; letter-spacing: 0.08em;
+      text-transform: uppercase; margin-bottom: 0.5rem;
+    }
+    .highlight p { font-size: 0.9rem; color: #78350f; line-height: 1.65; }
+
+    /* COLOR SCHEME */
+    .color-row {
+      display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 1rem;
+    }
+    .color-chip {
+      display: flex; align-items: center; gap: 0.6rem;
+      background: #f8fafc; border: 1px solid #e2e8f0;
+      border-radius: 0.75rem; padding: 0.6rem 1rem;
+      font-size: 0.83rem;
+    }
+    .color-chip .dot {
+      width: 1.1rem; height: 1.1rem; border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .dot-main { background: linear-gradient(135deg, #4f46e5, #7c3aed); }
+    .dot-sub  { background: #d4d4aa; border: 1px solid #ccc; }
+    .dot-point{ background: linear-gradient(135deg, #f59e0b, #ef4444); }
+    .dot-dark { background: #1e293b; }
+
+    .color-warn {
+      background: #fef2f2; border: 1px solid #fecaca;
+      border-radius: 0.75rem; padding: 0.85rem 1rem;
+      font-size: 0.85rem; color: #991b1b; margin-top: 0.75rem;
+    }
+    .color-warn strong { font-weight: 700; }
+
+    .harmony-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 0.6rem; margin-top: 1rem;
+    }
+    .harmony-item {
+      background: #f1f5f9; border-radius: 0.65rem;
+      padding: 0.6rem 0.85rem; font-size: 0.82rem;
+      font-weight: 500; color: var(--secondary);
+      text-align: center; border: 1px solid #e2e8f0;
+    }
+
+    /* COMPOSITION */
+    .comp-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+    .comp-card {
+      border-radius: 1rem; padding: 1.2rem;
+      border: 1px solid #e2e8f0;
+      transition: all 0.2s;
+    }
+    .comp-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); transform: translateY(-2px); }
+    .comp-card .comp-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+    .comp-card h4 { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.4rem; }
+    .comp-card p { font-size: 0.82rem; color: var(--text-muted); }
+
+    .comp-card.blue   { background: linear-gradient(135deg, #eff6ff, #dbeafe); border-color: #bfdbfe; }
+    .comp-card.green  { background: linear-gradient(135deg, #f0fdf4, #dcfce7); border-color: #bbf7d0; }
+    .comp-card.purple { background: linear-gradient(135deg, #faf5ff, #ede9fe); border-color: #ddd6fe; }
+    .comp-card.orange { background: linear-gradient(135deg, #fff7ed, #ffedd5); border-color: #fed7aa; }
+    .comp-card.pink   { background: linear-gradient(135deg, #fdf2f8, #fce7f3); border-color: #fbcfe8; }
+
+    /* MOTION BOX */
+    .motion-box {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem;
+    }
+    .motion-item {
+      border-radius: 1rem; padding: 1.2rem;
+      display: flex; flex-direction: column; gap: 0.5rem;
+    }
+    .motion-item.left  { background: #eff6ff; border: 1px solid #bfdbfe; }
+    .motion-item.right { background: #f0fdf4; border: 1px solid #bbf7d0; }
+    .motion-item .dir  { font-size: 1.5rem; }
+    .motion-item h4    { font-size: 0.9rem; font-weight: 700; }
+    .motion-item p     { font-size: 0.82rem; color: var(--text-muted); }
+
+    /* REFERENCE */
+    .ref-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 0.75rem; margin-top: 0.5rem;
+    }
+    .ref-item {
+      background: #f8fafc; border: 1px solid #e2e8f0;
+      border-radius: 0.85rem; padding: 0.9rem 1rem;
+      font-size: 0.85rem; font-weight: 500; color: var(--primary);
+      display: flex; align-items: center; gap: 0.6rem;
+    }
+    .ref-item::before { content: '🔗'; font-size: 1rem; }
+
+    /* TIP BOX */
+    .tip {
+      background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+      border: 1.5px solid #6ee7b7;
+      border-radius: 1rem; padding: 1.1rem 1.4rem;
+      font-size: 0.88rem; color: #065f46;
+      margin-top: 1rem;
+    }
+    .tip strong { font-weight: 700; }
+
+    /* FOOTER */
+    footer {
+      text-align: center;
+      padding: 2rem 1rem;
+      background: linear-gradient(135deg, #4f46e5, #7c3aed);
+      color: rgba(255,255,255,0.8);
+      font-size: 0.85rem;
+    }
+    footer strong { color: white; }
+
+    /* ANIMATIONS */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .card, .sim-item, .comp-card {
+      animation: fadeUp 0.4s ease both;
+    }
+
+    @media (max-width: 600px) {
+      .motion-box { grid-template-columns: 1fr; }
+      .hero h1 { font-size: 1.6rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <ul>
+    <li><a href="#sim">🎬 시뮬레이션</a></li>
+    <li><a href="#comp">📐 영상 구도</a></li>
+    <li><a href="#color">🎨 색감 이론</a></li>
+    <li><a href="#ref">🔗 레퍼런스</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="badge">📅 2026년 3월 19일 · 저녁반</div>
+  <h1>C4D 시뮬레이션<br>&amp; 영상 구도 이론</h1>
+  <p>애니메이션 자동화 · 영상 구도법 · 색감 활용 전략</p>
+  <div class="hero-meta">
+    <span>🎬 4가지 시뮬레이션</span>
+    <span>📐 구도 이론</span>
+    <span>🎨 색감 법칙</span>
+  </div>
+</header>
+
+<main>
+
+  <!-- ① 시뮬레이션 -->
+  <section id="sim" class="card">
+    <div class="section-title">
+      <div class="icon">🎬</div>
+      <h2>C4D 시뮬레이션 (애니메이션)
+        <span>컴퓨터가 자동으로 애니메이션을 생성하는 기능</span>
+      </h2>
+    </div>
+
+    <div class="sim-grid">
+      <div class="sim-item">
+        <div class="num">[ 1 ] 다이나믹 시뮬레이션</div>
+        <h3>물리 기반 애니메이션</h3>
+        <p>중력·충돌 등 물리 법칙을 적용해 오브젝트의 움직임을 자동 생성하는 가장 일반적인 형태</p>
+        <div class="tags">
+          <span class="tag">리지드 바디</span>
+          <span class="tag">소프트 바디</span>
+          <span class="tag">콜라이더 바디</span>
+          <span class="tag">고스트 바디</span>
+        </div>
+      </div>
+
+      <div class="sim-item">
+        <div class="num">[ 2 ] 클로즈 시뮬레이션</div>
+        <h3>천 재질 애니메이션</h3>
+        <p>의상, 깃발, 베개, 이불 등 천과 관련된 부드러운 움직임을 자동으로 생성</p>
+        <div class="tags">
+          <span class="tag">의상</span>
+          <span class="tag">깃발</span>
+          <span class="tag">이불·베개</span>
+        </div>
+      </div>
+
+      <div class="sim-item">
+        <div class="num">[ 3 ] 스플라인 시뮬레이션</div>
+        <h3>선 기반 애니메이션</h3>
+        <p>펜툴로 그린 선에 시뮬레이션을 적용해 밧줄, 쇠사슬 같은 움직임을 자동 생성</p>
+        <div class="tags">
+          <span class="tag">밧줄</span>
+          <span class="tag">쇠사슬</span>
+          <span class="tag">스플라인</span>
+        </div>
+      </div>
+
+      <div class="sim-item special">
+        <div class="num">[ 4 ] 그 외 플러그인</div>
+        <h3>확장 시뮬레이션</h3>
+        <p>스프링, 모터 등 기본 기능과 강력한 서드파티 플러그인으로 더욱 다양한 표현 가능</p>
+        <div class="tags">
+          <span class="tag">스프링</span>
+          <span class="tag">모터</span>
+          <span class="tag">리얼플로우 (유체)</span>
+          <span class="tag">터뷸런스 FD (불·연기)</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ② 영상 구도 -->
+  <section id="comp" class="card">
+    <div class="section-title">
+      <div class="icon">📐</div>
+      <h2>영상 구도 이론
+        <span>시각적 안정감과 역동성을 만드는 구도 전략</span>
+      </h2>
+    </div>
+
+    <div class="comp-grid">
+      <div class="comp-card blue">
+        <div class="comp-icon">⅓</div>
+        <h4>1/3 구도법</h4>
+        <p>화면을 3×3 격자로 나누고 교차점에 피사체를 배치하는 고전적인 황금비 구도</p>
+      </div>
+      <div class="comp-card green">
+        <div class="comp-icon">🎯</div>
+        <h4>중앙 구도</h4>
+        <p>피사체를 정중앙에 배치해 강한 존재감과 대칭미를 표현</p>
+      </div>
+      <div class="comp-card purple">
+        <div class="comp-icon">🖼️</div>
+        <h4>Frame in Frame</h4>
+        <p>프레임 안에 또 다른 프레임을 만들어 피사체에 시선을 집중시키는 기법</p>
+      </div>
+      <div class="comp-card orange">
+        <div class="comp-icon">↔️</div>
+        <h4>대비를 통한 구도</h4>
+        <p>명도 · 색감(보색) · 크기 · 공간 · 속도 대비로 긴장감과 흥미를 유발</p>
+      </div>
+      <div class="comp-card pink">
+        <div class="comp-icon">📏</div>
+        <h4>라인 구도</h4>
+        <p>시선, 오브젝트, 소실점을 활용한 선으로 자연스럽게 시선을 유도</p>
+      </div>
+    </div>
+
+    <!-- 움직임 -->
+    <div style="margin-top:1.25rem;">
+      <h3 style="font-size:0.95rem; font-weight:700; color:var(--text); margin-bottom:0.5rem;">👁 움직임과 시지각</h3>
+      <div class="motion-box">
+        <div class="motion-item left">
+          <div class="dir">⬅️</div>
+          <h4>오른쪽 → 왼쪽 이동</h4>
+          <p>역동성, 불안함, 긴장감을 유발<br>→ 강렬한 장면에 활용</p>
+        </div>
+        <div class="motion-item right">
+          <div class="dir">➡️</div>
+          <h4>왼쪽 → 오른쪽 이동</h4>
+          <p>안정감, 편안함을 유발<br>→ 여유롭고 부드러운 장면에 활용</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="highlight" style="margin-top:1rem;">
+      <div class="hl-title">⚖️ 무게감과 안정감</div>
+      <p>아래쪽이 무거울수록 <strong>안정감</strong>을 주고, 위쪽이 무거울수록 <strong>불안감</strong>을 준다. 영상의 무드에 따라 의도적으로 활용하자.</p>
+    </div>
+  </section>
+
+  <!-- ③ 색감 이론 -->
+  <section id="color" class="card">
+    <div class="section-title">
+      <div class="icon">🎨</div>
+      <h2>색감 이론 (재능 99%)
+        <span>색은 배워서 쓴다 — 3~5개, 최대 8개를 넘기지 말 것</span>
+      </h2>
+    </div>
+
+    <div class="list-grid">
+      <div class="list-block">
+        <h4>🌈 색 조합 유형</h4>
+        <ul>
+          <li>보색</li>
+          <li>유사색</li>
+          <li>단색</li>
+          <li>분할보색</li>
+          <li>트리아딕</li>
+          <li>테트라딕</li>
+        </ul>
+      </div>
+
+      <div class="list-block" style="border-left-color: var(--success);">
+        <h4 style="color:var(--success);">🎭 컬러 역할 분담</h4>
+        <ul>
+          <li>메인 컬러 (주인공)</li>
+          <li>서브 컬러 (미색·뉴트럴)</li>
+          <li>포인트 컬러 (보색 강조)</li>
+          <li>다크 컬러 (대비·무게감)</li>
+        </ul>
+      </div>
+
+      <div class="list-block" style="border-left-color: var(--accent);">
+        <h4 style="color:#b45309;">✅ 색감 체크리스트</h4>
+        <ul>
+          <li>한색과 난색이 잘 조합됐는가?</li>
+          <li>채도가 전부 낮거나 높지 않은가?</li>
+          <li>명도가 전부 낮거나 높지 않은가?</li>
+          <li>완전한 #000000 / #FFFFFF는 지양</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3 style="font-size:0.9rem; font-weight:700; color:var(--text-muted); margin:1.25rem 0 0.5rem;">🎡 색 조합 팔레트 유형</h3>
+    <div class="harmony-grid">
+      <div class="harmony-item">보색</div>
+      <div class="harmony-item">유사색</div>
+      <div class="harmony-item">단색</div>
+      <div class="harmony-item">분할보색</div>
+      <div class="harmony-item">트리아딕</div>
+      <div class="harmony-item">테트라딕</div>
+    </div>
+
+    <h3 style="font-size:0.9rem; font-weight:700; color:var(--text-muted); margin:1.25rem 0 0.5rem;">🖌 컬러 4역할</h3>
+    <div class="color-row">
+      <div class="color-chip"><div class="dot dot-main"></div>메인 컬러</div>
+      <div class="color-chip"><div class="dot dot-sub"></div>서브 컬러 (미색·뉴트럴)</div>
+      <div class="color-chip"><div class="dot dot-point"></div>포인트 컬러 (보색)</div>
+      <div class="color-chip"><div class="dot dot-dark"></div>다크 컬러 (대비·무게)</div>
+    </div>
+
+    <div class="color-warn">
+      ⚠️ <strong>완전한 검정(#000000)과 흰색(#FFFFFF)은 사용하지 않는다.</strong><br>
+      채도가 너무 낮으면 → 빈티지·올드해 보임 / 너무 높으면 → 쨍하고 과해 보임
+    </div>
+
+    <div class="tip">
+      💡 <strong>추천 유튜브:</strong> <em>Skim on west</em> — 영상 이론·색감 레퍼런스를 위한 채널
+    </div>
+  </section>
+
+  <!-- ④ 레퍼런스 -->
+  <section id="ref" class="card">
+    <div class="section-title">
+      <div class="icon">🔗</div>
+      <h2>색감 레퍼런스 사이트
+        <span>일러스트레이터들의 색감을 벤치마킹하자</span>
+      </h2>
+    </div>
+    <div class="ref-grid">
+      <div class="ref-item">hokyoungkim.com</div>
+      <div class="ref-item">ericpautz.com</div>
+      <div class="ref-item">benjaminflouw.com</div>
+      <div class="ref-item">robertfrankhunter.com</div>
+    </div>
+    <div class="tip" style="margin-top:1rem;">
+      🖼 그림(일러스트) 작가들의 색 조합을 분석하면 감각적인 컬러 팔레트를 빠르게 익힐 수 있다.
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <p>✨ Made by <strong>럭키</strong> · 저녁반 수업자료 · 2026.03.19</p>
+</footer>
+
+</body>
+</html>
